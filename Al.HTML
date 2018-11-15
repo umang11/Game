@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Map</title>
+    <style>
+        html, body, #map {
+            height: 600px;
+            width: 100%;
+            margin: 0px;
+            padding: 0px
+        }
+    </style>
+    <script src="http://maps.google.com/maps/api/js"></script>
+</head>
+<body>
+    <div id="map"></div>
+    <script>
+        // ORIGIN
+        var locations = [
+            ['Manchester', 'M3 3JU', 'https://www.google.co.uk'],
+            ['Chester', 'CH1 2DY', 'https://www.google.co.uk'],
+            ['Liverpool', 'L3 8EN', 'https://www.google.co.uk/']
+        ];
+        var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 9,
+            center: new google.maps.LatLng(53.381021, -2.608138),
+            mapTypeId: google.maps.MapTypeId.TERRAIN
+        });
+        var infowindow = new google.maps.InfoWindow();
+        var geocoder = new google.maps.Geocoder();
+        var bounds = new google.maps.LatLngBounds();
+        var marker, i;
+        for (i = 0; i < locations.length; i++) {
+            codeAddress(locations[i]);
+            }
+        function codeAddress(location) {
+            geocoder.geocode({
+                'address': location[1]
+            }, function (results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                    map.setCenter(results[0].geometry.location);
+                    var marker = new google.maps.Marker({
+                        map: map,
+                        title: location[1],
+                        url: locations[2],
+                        position: results[0].geometry.location
+                    });
+                    bounds.extend(marker.getPosition());
+                    map.fitBounds(bounds);
+                    google.maps.event.addListener(marker, 'dblclick', function () {
+                        window.location.href = this.url;
+                    });
+                    google.maps.event.addListener(marker, 'click', (function (marker, location) {
+                        return function () {
+                            infowindow.setContent(location[0]);
+                            infowindow.open(map, marker);
+                        };
+                    })(marker, location));
+                } else {
+                    console.log("Geocode was not successful for the following reason: " + status);
+                }
+            });
+        }
+        // CUSTOM CHANGE
+        // var locations = ['M3 3JU', 'CH1 2DY', 'L3 8EN'];
+        // var locations = [
+        //     ['Chester', 'CH1 2DY', 'https://www.google.co.uk'],
+        //     ['Liverpool', 'L3 8EN', 'https://www.google.co.uk/']
+        // ];
+        // var map = new google.maps.Map(document.getElementById('map'), {
+        //     center: new google.maps.LatLng(53.381021, -2.608138),
+        //     zoom: 9
+        // });
+        // var infowindow = new google.maps.InfoWindow();
+        // var geocoder = new google.maps.Geocoder();
+        // var bounds = new google.maps.LatLngBounds();
+        // var marker, i;
+        // for (i = 0; i < locations.length; i++) {
+        //     codeAddress(locations[i]);
+        // }
+        // function codeAddress(location) {
+        //     geocoder.geocode({
+        //         'address': location
+        //     }, function (results, status) {
+        //         if (status == google.maps.GeocoderStatus.OK) {
+        //             map.setCenter(results[0].geometry.location);
+        //             console.log(results);
+        //             var marker = new google.maps.Marker({
+        //                 map: map,
+        //                 position: results[0].geometry.location
+        //             });
+        //             bounds.extend(marker.getPosition());
+        //             map.fitBounds(bounds);
+        //             google.maps.event.addListener(marker, 'click', (function (marker, location) {
+        //                 return function () {
+        //                     infowindow.setContent(location[0]);
+        //                     infowindow.open(map, marker);
+        //                 };
+        //             })(marker, location));
+        //         } else {
+        //             console.log("Geocode was not successful for the following reason: " + status);
+        //         }
+        //     });
+        // }
+    </script>
+</body>
+</html>
